@@ -2,6 +2,8 @@ package com.khang.todoapp.controller;
 
 import com.khang.todoapp.model.Todo;
 import com.khang.todoapp.service.TodoService;
+import com.khang.todoapp.model.User;
+import com.khang.todoapp.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +17,21 @@ public class TodoController {
 
     @Autowired
     private TodoService todoService;
+    @Autowired
+    private UserRepository userRepository;
 
     // GET all todos
     @GetMapping
-    public List<Todo> getAllTodos() {
-        return todoService.getAllTodos();
+    public List<Todo> getTodosByUser(@RequestParam String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return todoService.getTodosByUser(user);
+    }
+
+    @GetMapping("/all")
+    public List<Todo> getTodos() {
+        return todoService.getTodos();
     }
 
     // GET a todo by ID
@@ -30,7 +42,11 @@ public class TodoController {
 
     // POST create a new todo
     @PostMapping
-    public Todo createTodo(@RequestBody Todo todo) {
+    public Todo createTodo(@RequestBody Todo todo, @RequestParam String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        todo.setUser(user);
         return todoService.createTodo(todo);
     }
 

@@ -5,9 +5,16 @@ import lombok.*;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "users")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 
 public class User {
     @Id
@@ -20,9 +27,11 @@ public class User {
 
     // One user can have many todos
     // CascadeType.ALL means that any operation on User will also apply to its todos
-    // orphanRemoval = true means that if a todo is removed from the user's todo list,
+    // orphanRemoval = true means that if a todo is removed from the user's todo
+    // list,
     // it will also be deleted from the database. If a user is deleted,
     // all their todos will also be deleted.
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Todo> todos;
 

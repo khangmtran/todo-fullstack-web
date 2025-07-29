@@ -1,5 +1,7 @@
 package com.khang.todoapp.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,5 +24,4 @@ public class Todo {
     @JoinColumn(name = "user_id") // Foreign key column in the todos table
     private User user;
 
-    
 }

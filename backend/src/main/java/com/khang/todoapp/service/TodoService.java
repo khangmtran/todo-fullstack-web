@@ -1,6 +1,7 @@
 package com.khang.todoapp.service;
 
 import com.khang.todoapp.model.Todo;
+import com.khang.todoapp.model.User;
 import com.khang.todoapp.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,11 @@ public class TodoService {
     @Autowired
     private TodoRepository todoRepository;
 
-    public List<Todo> getAllTodos() {
+    public List<Todo> getTodosByUser(User user) {
+        return todoRepository.findByUser(user);
+    }
+
+    public List<Todo> getTodos(){
         return todoRepository.findAll();
     }
 
