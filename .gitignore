@@ -14,3 +14,8 @@ Thumbs.db
 .env
 
 /out/
+
+node_modules/
+dist/
+build/
+

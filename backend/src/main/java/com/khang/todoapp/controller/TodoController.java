@@ -6,6 +6,7 @@ import com.khang.todoapp.model.User;
 import com.khang.todoapp.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,10 +23,8 @@ public class TodoController {
 
     // GET all todos
     @GetMapping
-    public List<Todo> getTodosByUser(@RequestParam String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+    public List<Todo> getTodosByUser() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return todoService.getTodosByUser(user);
     }
 
@@ -42,10 +41,8 @@ public class TodoController {
 
     // POST create a new todo
     @PostMapping
-    public Todo createTodo(@RequestBody Todo todo, @RequestParam String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+    public Todo createTodo(@RequestBody Todo todo) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         todo.setUser(user);
         return todoService.createTodo(todo);
     }
