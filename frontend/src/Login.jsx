@@ -1,10 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import "./Login.css"; 
+import "./css/Login.css"; 
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSignup = () => {
+    navigate('/signup');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +30,7 @@ function Login({ onLogin }) {
   return (
     <div className="login-wrapper">
       {/* wrapper to center form */}
-      <form onSubmit={handleSubmit} className="login-form">
+      <form onSubmit={handleSubmit} className="login-form"> 
         <h2>Login</h2>
 
         <input
@@ -45,7 +51,7 @@ function Login({ onLogin }) {
 
         <button type="submit" className="btn-login">Log In</button>
         <p>Or Sign Up Using</p>
-        <button className="btn-signup">Sign Up</button> 
+        <button type="button" className ="btn-signup" onClick={handleSignup}>Sign Up</button> 
       </form>
     </div>
   );

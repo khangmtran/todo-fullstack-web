@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-function TodoApp({ token }) {
+function TodoApp({ token, onLogout }) {
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState("");
 
@@ -13,7 +13,8 @@ function TodoApp({ token }) {
   });
 
   useEffect(() => {
-    api.get("/todos")
+    api
+      .get("/todos")
       .then((res) => setTodos(res.data))
       .catch((err) => console.error("Failed to fetch todos:", err));
   }, []);
@@ -55,6 +56,9 @@ function TodoApp({ token }) {
 
   return (
     <div>
+      <button type="button" onClick={onLogout}>
+        Logout
+      </button>
       <h2>Your To-Do List</h2>
       <input
         type="text"
