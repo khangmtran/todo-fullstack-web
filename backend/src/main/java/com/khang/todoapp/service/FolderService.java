@@ -23,7 +23,7 @@ public class FolderService {
     }
 
     public ResponseEntity<?> createFolder(Folder folder){
-        return ResponseEntity.status(HttpStatus.CREATED).body(folder);
+        return ResponseEntity.status(HttpStatus.CREATED).body(folderRepository.save(folder));
     }
 
     public ResponseEntity<?> updateFolder(long id, Folder folderDetails, User user){

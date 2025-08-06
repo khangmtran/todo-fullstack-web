@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./css/Login.css";
+import { api } from "./services/api";
 
 function Signup() {
   const [username, setUsername] = useState("");
@@ -13,7 +14,7 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/auth/signup", {
+      await api.post("auth/signup", {
         username,
         password,
       });

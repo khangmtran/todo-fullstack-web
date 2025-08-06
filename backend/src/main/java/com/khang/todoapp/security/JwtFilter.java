@@ -1,6 +1,5 @@
 package com.khang.todoapp.security;
 
-import com.khang.todoapp.security.JwtUtil;
 import com.khang.todoapp.repository.UserRepository;
 import com.khang.todoapp.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
