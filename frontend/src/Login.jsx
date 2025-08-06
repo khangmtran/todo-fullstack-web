@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./css/Login.css"; 
+import "./css/Login.css";
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState("");
@@ -9,7 +9,7 @@ function Login({ onLogin }) {
   const navigate = useNavigate();
 
   const handleSignup = () => {
-    navigate('/signup');
+    navigate("/signup");
   };
 
   const handleSubmit = async (e) => {
@@ -30,7 +30,7 @@ function Login({ onLogin }) {
   return (
     <div className="login-wrapper">
       {/* wrapper to center form */}
-      <form onSubmit={handleSubmit} className="login-form"> 
+      <form onSubmit={handleSubmit} className="login-form">
         <h2>Login</h2>
 
         <input
@@ -49,9 +49,13 @@ function Login({ onLogin }) {
           className="form-input"
         />
 
-        <button type="submit" className="btn-login">Log In</button>
+        <button type="submit" className="btn-login">
+          Log In
+        </button>
         <p>Or Sign Up Using</p>
-        <button type="button" className ="btn-signup" onClick={handleSignup}>Sign Up</button> 
+        <button type="button" className="btn-signup" onClick={handleSignup}>
+          Sign Up
+        </button>
       </form>
     </div>
   );

@@ -6,7 +6,6 @@ import lombok.*;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "users")
@@ -23,6 +22,7 @@ public class User {
 
     @Column(unique = true)
     private String username;
+    
     private String password;
 
     // One user can have many todos

@@ -1,7 +1,5 @@
 package com.khang.todoapp.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,11 +15,16 @@ public class Todo {
     //Auto-increments the ID
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
-    private boolean completed;
+    private Boolean completed;
+    private String note;
 
     @ManyToOne // Many todos can belong to one user
     @JoinColumn(name = "user_id") // Foreign key column in the todos table
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "folder_id")
+    private Folder folder;
 }

@@ -1,89 +1,169 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useRef } from "react";
+import "./css/TodoApp.css";
 
-function TodoApp({ token, onLogout }) {
-  const [todos, setTodos] = useState([]);
-  const [title, setTitle] = useState("");
-
-  const api = axios.create({
-    baseURL: "http://localhost:8080",
-    headers: {
-      Authorization: `Bearer ${token}`,
+function TodoApp({ onLogout }) {
+  const [folderId, setFolderId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newNote, setNewNote] = useState("");
+  const [folders, setFolders] = useState([
+    {
+      id: 1,
+      title: "Untitled",
+      edit: false,
+      todos: [
+        {
+          id: Date.now(),
+          title: "first",
+          note: "this is a note",
+        },
+      ],
     },
-  });
+  ]);
+  const folderIdRef = useRef(2);
 
-  useEffect(() => {
-    api
-      .get("/todos")
-      .then((res) => setTodos(res.data))
-      .catch((err) => console.error("Failed to fetch todos:", err));
-  }, []);
+  const addTodo = () => {
+    const newTodo = {
+      id: Date.now(),
+      title: newTitle,
+      note: newNote,
+    };
 
-  const handleCreate = async () => {
-    if (!title.trim()) return;
-    try {
-      const res = await api.post("/todos", {
-        title,
-        completed: false,
-      });
-      setTodos([...todos, res.data]);
-      setTitle("");
-    } catch (err) {
-      console.error("Failed to create todo:", err);
-    }
+    setFolders((prev) =>
+      prev.map((folder) =>
+        folder.id === folderId
+          ? { ...folder, todos: [...folder.todos, newTodo] }
+          : folder
+      )
+    );
+
+    setNewTitle("");
+    setNewNote("");
+    setShowModal(false);
   };
 
-  const handleToggle = async (id, currentStatus) => {
-    try {
-      const res = await api.put(`/todos/${id}`, {
-        completed: !currentStatus,
-        title: todos.find((t) => t.id === id).title,
-      });
-      setTodos(todos.map((t) => (t.id === id ? res.data : t)));
-    } catch (err) {
-      console.error("Failed to update todo:", err);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await api.delete(`/todos/${id}`);
-      setTodos(todos.filter((t) => t.id !== id));
-    } catch (err) {
-      console.error("Failed to delete todo:", err);
-    }
+  const addNewFolder = () => {
+    const newFolder = {
+      id: folderIdRef.current,
+      title: "Untitled",
+      edit: true,
+      todos: [],
+    };
+    setFolders((prev) => [...prev, newFolder]);
+    folderIdRef.current++;
   };
 
   return (
-    <div>
-      <button type="button" onClick={onLogout}>
-        Logout
-      </button>
-      <h2>Your To-Do List</h2>
-      <input
-        type="text"
-        placeholder="New to-do"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <button onClick={handleCreate}>Add</button>
+    <div className="todo-container">
+      <div className="sidebar">
+        <h2>Tasks</h2>
+        <p>Current</p>
+        <p>Completed</p>
+      </div>
 
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>
-            <span
-              style={{
-                textDecoration: todo.completed ? "line-through" : "none",
-                cursor: "pointer",
-              }}
-              onClick={() => handleToggle(todo.id, todo.completed)}
-            >
-              {todo.title}
-            </span>
-            <button onClick={() => handleDelete(todo.id)}>❌</button>
-          </li>
+      <div className="main-content">
+        <div classNamer="main-header">
+          <button onClick={onLogout} className="btn-logout">
+            Log out
+          </button>
+        </div>
+
+        {folders.map((folder) => (
+          <div key={folder.id} className="folder-block">
+            <div className="folder-header">
+              {folder.edit ? (
+                <input
+                  value={folder.title}
+                  onChange={(e) =>
+                    setFolders((prev) =>
+                      prev.map((f) =>
+                        f.id === folder.id ? { ...f, title: e.target.value } : f
+                      )
+                    )
+                  }
+                  onBlur={() =>
+                    setFolders((prev) =>
+                      prev.map((f) =>
+                        f.id === folder.id ? { ...f, edit: false } : f
+                      )
+                    )
+                  }
+                  autoFocus
+                />
+              ) : (
+                <>
+                  <h3>{folder.title}</h3>
+                  <button
+                    onClick={() =>
+                      setFolders((prev) =>
+                        prev.map((f) =>
+                          f.id === folder.id ? { ...f, edit: true } : f
+                        )
+                      )
+                    }
+                  >
+                    ✏️
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div className="todo-block">
+              {folder.todos.map((todo) => (
+                <div key={todo.id} className="todo-box">
+                  <div className="todo-header">
+                    <button>X</button>
+                    <button>✅</button>
+                  </div>
+                  <div className="todo-main">
+                    <h4>{todo.title}</h4>
+                    <p>{todo.note}</p>
+                  </div>
+                </div>
+              ))}
+              <div className="new-todo">
+                <button
+                  onClick={() => {
+                    setShowModal(true);
+                    setFolderId(folder.id);
+                  }}
+                >
+                  New Todo
+                </button>
+              </div>
+            </div>
+          </div>
         ))}
-      </ul>
+
+        {showModal ? (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>Add New Todo</h3>
+              <input
+                type="text"
+                placeholder="Title"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+              />
+              <textarea
+                placeholder="Note"
+                value={newNote}
+                onChange={(e) => setNewNote(e.target.value)}
+              />
+              <div className="modal-actions">
+                <button onClick={addTodo}>Add</button>
+                <button onClick={() => setShowModal(false)}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        <div>
+          <button onClick={addNewFolder} className="add-folder-btn">
+            ➕ New Folder
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
