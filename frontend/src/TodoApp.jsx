@@ -1,56 +1,86 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import "./css/TodoApp.css";
+import api from "./services/api";
 
 function TodoApp({ onLogout }) {
-  const [folderId, setFolderId] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newNote, setNewNote] = useState("");
-  const [folders, setFolders] = useState([
-    {
-      id: 1,
-      title: "Untitled",
-      edit: false,
-      todos: [
-        {
-          id: Date.now(),
-          title: "first",
-          note: "this is a note",
-        },
-      ],
-    },
-  ]);
-  const folderIdRef = useRef(2);
+  const [showModal, setShowModal] = useState(false); //edit todo modal
+  const [newTodoTitle, setNewTodoTitle] = useState("Untitled"); //modifying todo title
+  const [newNote, setNewNote] = useState(""); //adding note to todo
+  const [folderId, setFolderId] = useState(null); //get current folder id to know which folder is being changed
+  const [tempTitle, setTempTitle] = useState(""); //edited title when user changes folder title
+  const [folders, setFolders] = useState([]);
 
-  const addTodo = () => {
-    const newTodo = {
-      id: Date.now(),
-      title: newTitle,
-      note: newNote,
-    };
+  //load folders once after render
+  useEffect(() => {
+    loadFolders();
+  }, []);
 
-    setFolders((prev) =>
-      prev.map((folder) =>
-        folder.id === folderId
-          ? { ...folder, todos: [...folder.todos, newTodo] }
-          : folder
-      )
-    );
+  const loadFolders = async () => {
+    try {
+      const response = await api.get("/folders");
+      setFolders(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-    setNewTitle("");
-    setNewNote("");
+  const saveEditedFolder = async (editedTitle) => {
+    if (!editedTitle.trim()) {
+      editedTitle = "Untitled";
+    } else {
+      editedTitle = editedTitle.trim();
+    }
+    try {
+      await api.put("/folders/${folderId}", { title: editedTitle });
+      setFolders((prev) =>
+        prev.map((f) => (f.id === folderId ? { ...f, title: editedTitle } : f))
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    setFolderId(null);
+  };
+
+  const addNewTodo = async (newTodoTitle, newNote) => {
+    const title = newTodoTitle.trim() ? newTodoTitle.trim() : "Untitled";
+    const note = newNote ? newNote.trim() : "";
+
+    try {
+      const todoData = {
+        title,
+        note,
+        completed: false,
+        folder: folderId,
+      };
+      const response = await api.post("/todos", todoData);
+      setFolders((prev) =>
+        prev.map((f) =>
+          f.id === folderId ? { ...f, todos: [...f.todos, response.data] } : f
+        )
+      );
+    } catch (err) {
+      console.log(err);
+    }
+
+    setNewTodoTitle("Untitled");
+    setNote("");
+    setFolderId(null);
     setShowModal(false);
   };
 
-  const addNewFolder = () => {
-    const newFolder = {
-      id: folderIdRef.current,
-      title: "Untitled",
-      edit: true,
-      todos: [],
-    };
-    setFolders((prev) => [...prev, newFolder]);
-    folderIdRef.current++;
+  const addNewFolder = async () => {
+    try {
+      const folderData = {
+        title: "Untitled",
+      };
+      const response = await api.post("/folders", folderData);
+      const newFolder = { ...response.data, todos: [] };
+      setFolders((prev) => {
+        [...prev, newFolder];
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -62,7 +92,7 @@ function TodoApp({ onLogout }) {
       </div>
 
       <div className="main-content">
-        <div classNamer="main-header">
+        <div className="main-header">
           <button onClick={onLogout} className="btn-logout">
             Log out
           </button>
@@ -71,36 +101,23 @@ function TodoApp({ onLogout }) {
         {folders.map((folder) => (
           <div key={folder.id} className="folder-block">
             <div className="folder-header">
-              {folder.edit ? (
+              {folderId === folder.id ? (
                 <input
-                  value={folder.title}
-                  onChange={(e) =>
-                    setFolders((prev) =>
-                      prev.map((f) =>
-                        f.id === folder.id ? { ...f, title: e.target.value } : f
-                      )
-                    )
-                  }
-                  onBlur={() =>
-                    setFolders((prev) =>
-                      prev.map((f) =>
-                        f.id === folder.id ? { ...f, edit: false } : f
-                      )
-                    )
-                  }
+                  value={tempTitle}
+                  onChange={(e) => {
+                    setTempTitle(e.target.value);
+                  }}
+                  onBlur={() => saveEditedFolder(tempTitle)}
                   autoFocus
                 />
               ) : (
                 <>
                   <h3>{folder.title}</h3>
                   <button
-                    onClick={() =>
-                      setFolders((prev) =>
-                        prev.map((f) =>
-                          f.id === folder.id ? { ...f, edit: true } : f
-                        )
-                      )
-                    }
+                    onClick={() => {
+                      setFolderId(folder.id);
+                      setTempTitle(folder.title);
+                    }}
                   >
                     ✏️
                   </button>
@@ -109,7 +126,7 @@ function TodoApp({ onLogout }) {
             </div>
 
             <div className="todo-block">
-              {folder.todos.map((todo) => (
+              {folders.todos.map((todo) => (
                 <div key={todo.id} className="todo-box">
                   <div className="todo-header">
                     <button>X</button>
@@ -142,8 +159,9 @@ function TodoApp({ onLogout }) {
               <input
                 type="text"
                 placeholder="Title"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
+                value={newTodoTitle}
+                onChange={(e) => setNewTodoTitle(e.target.value)}
+                autoFocus
               />
               <textarea
                 placeholder="Note"
@@ -151,8 +169,23 @@ function TodoApp({ onLogout }) {
                 onChange={(e) => setNewNote(e.target.value)}
               />
               <div className="modal-actions">
-                <button onClick={addTodo}>Add</button>
-                <button onClick={() => setShowModal(false)}>Cancel</button>
+                <button
+                  onClick={() => {
+                    addNewTodo(newTodoTitle, newNote);
+                  }}
+                >
+                  Add
+                </button>
+                <button
+                  onClick={() => {
+                    setNewTodoTitle("Untitled");
+                    setNewNote("");
+                    setFolderId(null);
+                    setShowModal(false);
+                  }}
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
