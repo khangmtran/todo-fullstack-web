@@ -22,6 +22,7 @@ function Login({ onLogin }) {
       const token = response.data.token;
       localStorage.setItem("token", token);
       onLogin(token);
+      navigate("/todos");
     } catch (err) {
       alert("Login failed: " + err.response.data);
     }
@@ -39,6 +40,7 @@ function Login({ onLogin }) {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="form-input"
+          autoFocus
         />
 
         <input

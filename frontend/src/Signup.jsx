@@ -33,6 +33,7 @@ function Signup() {
           className="form-input"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          autoFocus
         />
         <input
           type="password"

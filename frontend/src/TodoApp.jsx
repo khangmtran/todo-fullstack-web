@@ -16,14 +16,9 @@ function TodoApp({ onLogout }) {
     loadFolders();
   }, []);
 
-  useEffect(() => {
-    console.log("folderId changed to", folderId);
-  }, [folderId]);
-
   const loadFolders = async () => {
     try {
       const response = await api.get("/folders");
-      console.log("API response:", response.data);
       setFolders(response.data);
     } catch (err) {
       console.log(err);
@@ -34,7 +29,7 @@ function TodoApp({ onLogout }) {
     const title = editedTitle.trim() ? editedTitle.trim() : "Untitled";
 
     try {
-      await api.put(`/folders/${folderId}`, { title: title });
+      await api.put(`/folders/${editTitleId}`, { title: title });
       setFolders((prev) =>
         prev.map((f) => (f.id === editTitleId ? { ...f, title: title } : f))
       );
@@ -56,6 +51,7 @@ function TodoApp({ onLogout }) {
         folder: { id: folderId },
       };
       const response = await api.post("/todos", todoData);
+      console.log(response.data)
       setFolders((prev) =>
         prev.map((f) =>
           f.id === folderId ? { ...f, todos: [...f.todos, response.data] } : f
@@ -127,7 +123,7 @@ function TodoApp({ onLogout }) {
             </div>
 
             <div className="todo-block">
-              {folders.todos?.map((todo) => (
+              {folder.todos?.map((todo) => (
                 <div key={todo.id} className="todo-box">
                   <div className="todo-header">
                     <button>X</button>
