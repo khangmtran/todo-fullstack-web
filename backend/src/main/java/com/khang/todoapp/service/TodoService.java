@@ -1,5 +1,7 @@
 package com.khang.todoapp.service;
 
+import com.khang.todoapp.dto.DtoMapper;
+import com.khang.todoapp.dto.TodoDto;
 import com.khang.todoapp.model.Folder;
 import com.khang.todoapp.model.Todo;
 import com.khang.todoapp.model.User;
@@ -10,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service // Tells Spring this class holds business logic
@@ -22,20 +23,8 @@ public class TodoService {
     @Autowired
     private FolderRepository folderRepository;
 
-    public List<Todo> getTodosByUser(User user) {
-        return todoRepository.findByUser(user);
-    }
-
-    public List<Todo> getTodos(){
-        return todoRepository.findAll();
-    }
-
-    public Optional<Todo> getTodoById(Long id) {
-        return todoRepository.findById(id);
-    }
-
-    public ResponseEntity<?> createTodo(Todo todo, User user) {
-        Optional<Folder> optFolder = folderRepository.findById(todo.getFolder().getId());
+    public ResponseEntity<?> createTodo(TodoDto todoDto, User user) {
+        Optional<Folder> optFolder = folderRepository.findById(todoDto.getFolderId());
         if(optFolder.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Folder not found");
         }
@@ -43,25 +32,32 @@ public class TodoService {
         if(!folder.getUser().getId().equals(user.getId())){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to add todo to this folder");
         }
-        todo.setFolder(folder);
-        todo.setUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(todoRepository.save(todo));
+
+        Todo todo = Todo.builder()
+                .title(todoDto.getTitle())
+                .note(todoDto.getNote())
+                .folder(folder)
+                .build();
+        Todo saved = todoRepository.save(todo);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(DtoMapper.toTodoDto(saved));
     }
 
-    public ResponseEntity<?> updateTodo(Long id, Todo updatedTodo, User user) {
+    public ResponseEntity<?> updateTodo(Long id, TodoDto todoDto, User user) {
         Optional<Todo> optTodo = todoRepository.findById(id);
         if(optTodo.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Todo not found");
         }
         Todo existing = optTodo.get();
-        if(!existing.getUser().getId().equals(user.getId())){
+        if(!existing.getFolder().getUser().getId().equals(user.getId())){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to update this todo");
         }
-        if(!updatedTodo.getTitle().isEmpty()) existing.setTitle(updatedTodo.getTitle());
-        if(!updatedTodo.getNote().isEmpty()) existing.setNote(updatedTodo.getNote());
-        if(!updatedTodo.getCompleted()) existing.setCompleted(updatedTodo.getCompleted());
 
-        return ResponseEntity.ok(todoRepository.save(existing));
+        if(!todoDto.getTitle().isEmpty()) existing.setTitle(todoDto.getTitle());
+        if(!todoDto.getNote().isEmpty()) existing.setNote(todoDto.getNote());
+
+        Todo updated = todoRepository.save(existing);
+        return ResponseEntity.ok(DtoMapper.toTodoDto(updated));
     }
 
     public ResponseEntity<?> deleteTodo(Long id, User user) {
@@ -70,7 +66,7 @@ public class TodoService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Todo not found");
         }
         Todo existing = optTodo.get();
-        if(!existing.getUser().getId().equals(user.getId())){
+        if(!existing.getFolder().getUser().getId().equals(user.getId())){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to delete this todo");
         }
         todoRepository.delete(existing);

@@ -17,12 +17,7 @@ public class Todo {
     private Long id;
 
     private String title;
-    private Boolean completed;
     private String note;
-
-    @ManyToOne // Many todos can belong to one user
-    @JoinColumn(name = "user_id") // Foreign key column in the todos table
-    private User user;
 
     @ManyToOne
     @JoinColumn(name = "folder_id")

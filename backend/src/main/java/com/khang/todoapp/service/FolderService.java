@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.khang.todoapp.dto.DtoMapper;
+import com.khang.todoapp.dto.FolderDto;
 import com.khang.todoapp.model.Folder;
 import com.khang.todoapp.model.User;
 import com.khang.todoapp.repository.FolderRepository;
@@ -19,14 +21,19 @@ public class FolderService {
     
     public ResponseEntity<?> getFolders(User user){
         List<Folder> folders = folderRepository.findByUser(user);
-        return ResponseEntity.ok(folders);
+        return ResponseEntity.ok(DtoMapper.toListFoldersDto(folders));
     }
 
-    public ResponseEntity<?> createFolder(Folder folder){
-        return ResponseEntity.status(HttpStatus.CREATED).body(folderRepository.save(folder));
+    public ResponseEntity<?> createFolder(FolderDto folderDto, User user){
+        Folder folder = Folder.builder()
+                .title(folderDto.getTitle())
+                .user(user)
+                .build();
+        Folder saved = folderRepository.save(folder);
+        return ResponseEntity.status(HttpStatus.CREATED).body(DtoMapper.toFolderDto(saved));
     }
 
-    public ResponseEntity<?> updateFolder(long id, Folder folderDetails, User user){
+    public ResponseEntity<?> updateFolder(long id, FolderDto folderDto, User user){
         Optional<Folder> optFolder = folderRepository.findById(id);
         if(!optFolder.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Folder not found");
@@ -35,8 +42,9 @@ public class FolderService {
         if(!folder.getUser().getId().equals(user.getId())){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to update this folder");
         }
-        folder.setTitle(folderDetails.getTitle());
-        return ResponseEntity.ok(folderRepository.save(folder));
+        folder.setTitle(folderDto.getTitle());
+        Folder saved = folderRepository.save(folder);
+        return ResponseEntity.ok(DtoMapper.toFolderDto(saved));
     }
 
     public ResponseEntity<?> deleteFolder(long id, User user){

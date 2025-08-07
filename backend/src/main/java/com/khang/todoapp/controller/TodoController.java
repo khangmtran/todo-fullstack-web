@@ -1,5 +1,6 @@
 package com.khang.todoapp.controller;
 
+import com.khang.todoapp.dto.TodoDto;
 import com.khang.todoapp.model.Todo;
 import com.khang.todoapp.service.TodoService;
 import com.khang.todoapp.model.User;
@@ -18,16 +19,16 @@ public class TodoController {
     
     // POST create a new todo
     @PostMapping
-    public ResponseEntity<?> createTodo(@RequestBody Todo todo) {
+    public ResponseEntity<?> createTodo(@RequestBody TodoDto todoDto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return todoService.createTodo(todo, user);
+        return todoService.createTodo(todoDto, user);
     }
 
     // PUT update a todo
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTodo(@PathVariable Long id, @RequestBody Todo todoDetails) {
+    public ResponseEntity<?> updateTodo(@PathVariable Long id, @RequestBody TodoDto todoDto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return todoService.updateTodo(id, todoDetails, user);
+        return todoService.updateTodo(id, todoDto, user);
     }
 
     // DELETE a todo

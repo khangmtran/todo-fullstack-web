@@ -4,6 +4,7 @@ package com.khang.todoapp.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.khang.todoapp.dto.FolderDto;
 import com.khang.todoapp.model.Folder;
 import com.khang.todoapp.model.User;
 import com.khang.todoapp.service.FolderService;
@@ -33,16 +34,15 @@ public class FolderController{
     }
 
     @PostMapping
-    public ResponseEntity<?> createFolder(@RequestBody Folder folder){
+    public ResponseEntity<?> createFolder(@RequestBody FolderDto folderDto){
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        folder.setUser(user);
-        return folderService.createFolder(folder);
+        return folderService.createFolder(folderDto, user);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateFolder(@PathVariable long id, @RequestBody Folder folderDetails){
+    public ResponseEntity<?> updateFolder(@PathVariable long id, @RequestBody FolderDto folderDto){
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return folderService.updateFolder(id, folderDetails, user);
+        return folderService.updateFolder(id, folderDto, user);
     }
     
     @DeleteMapping("/{id}")

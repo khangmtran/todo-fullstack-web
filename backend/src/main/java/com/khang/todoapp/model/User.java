@@ -5,8 +5,6 @@ import lombok.*;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "users")
 @Getter
@@ -25,14 +23,13 @@ public class User {
     
     private String password;
 
-    // One user can have many todos
-    // CascadeType.ALL means that any operation on User will also apply to its todos
-    // orphanRemoval = true means that if a todo is removed from the user's todo
+    // One user can have many folders
+    // CascadeType.ALL means that any operation on User will also apply to its folders
+    // orphanRemoval = true means that if a folder is removed from the user's folder
     // list,
     // it will also be deleted from the database. If a user is deleted,
-    // all their todos will also be deleted.
-    @JsonIgnore
+    // all their folders will also be deleted.
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Todo> todos;
+    private List<Folder> folders;
 
 }
