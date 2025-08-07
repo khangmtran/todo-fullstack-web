@@ -12,5 +12,5 @@ import java.util.List;
 public class FolderDto {
     private Long id;
     private String title;
-    private List<TodoDto> todos; // Only lightweight todos
+    private List<TodoDto> todos; 
 }

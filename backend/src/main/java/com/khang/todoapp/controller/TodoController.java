@@ -1,7 +1,6 @@
 package com.khang.todoapp.controller;
 
 import com.khang.todoapp.dto.TodoDto;
-import com.khang.todoapp.model.Todo;
 import com.khang.todoapp.service.TodoService;
 import com.khang.todoapp.model.User;
 

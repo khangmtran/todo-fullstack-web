@@ -27,9 +27,11 @@ function TodoApp({ onLogout }) {
 
   const saveEditedFolder = async (editedTitle) => {
     const title = editedTitle.trim() ? editedTitle.trim() : "Untitled";
-
+    const folderData = {
+      title: title,
+    };
     try {
-      await api.put(`/folders/${editTitleId}`, { title: title });
+      await api.put(`/folders/${editTitleId}`, folderData);
       setFolders((prev) =>
         prev.map((f) => (f.id === editTitleId ? { ...f, title: title } : f))
       );
@@ -45,13 +47,11 @@ function TodoApp({ onLogout }) {
 
     try {
       const todoData = {
-        title,
-        note,
-        completed: false,
-        folder: { id: folderId },
+        title: title,
+        note: note,
+        folderId: folderId,
       };
       const response = await api.post("/todos", todoData);
-      console.log(response.data)
       setFolders((prev) =>
         prev.map((f) =>
           f.id === folderId ? { ...f, todos: [...f.todos, response.data] } : f
@@ -73,8 +73,7 @@ function TodoApp({ onLogout }) {
         title: "Untitled",
       };
       const response = await api.post("/folders", folderData);
-      const newFolder = { ...response.data, todos: [] };
-      setFolders((prev) => [...prev, newFolder]);
+      setFolders((prev) => [...prev, response.data]);
     } catch (err) {
       console.log(err);
     }
@@ -85,7 +84,6 @@ function TodoApp({ onLogout }) {
       <div className="sidebar">
         <h2>Tasks</h2>
         <p>Current</p>
-        <p>Completed</p>
       </div>
 
       <div className="main-content">
