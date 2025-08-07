@@ -40,7 +40,7 @@ public class TodoService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Folder not found");
         }
         Folder folder = optFolder.get();
-        if(!folder.getUser().equals(user)){
+        if(!folder.getUser().getId().equals(user.getId())){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to add todo to this folder");
         }
         todo.setFolder(folder);
@@ -54,7 +54,7 @@ public class TodoService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Todo not found");
         }
         Todo existing = optTodo.get();
-        if(!existing.getUser().equals(user)){
+        if(!existing.getUser().getId().equals(user.getId())){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to update this todo");
         }
         if(!updatedTodo.getTitle().isEmpty()) existing.setTitle(updatedTodo.getTitle());
@@ -70,7 +70,7 @@ public class TodoService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Todo not found");
         }
         Todo existing = optTodo.get();
-        if(!existing.getUser().equals(user)){
+        if(!existing.getUser().getId().equals(user.getId())){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to delete this todo");
         }
         todoRepository.delete(existing);

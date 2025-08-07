@@ -45,7 +45,7 @@ public class FolderService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Folder not found");
         }
         Folder folder = optFolder.get();
-        if(!folder.getUser().equals(user)){
+        if(!folder.getUser().getId().equals(user.getId())){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to delete this folder");
         }
         folderRepository.delete(folder);

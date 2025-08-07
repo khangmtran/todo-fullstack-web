@@ -6,18 +6,24 @@ function TodoApp({ onLogout }) {
   const [showModal, setShowModal] = useState(false); //edit todo modal
   const [newTodoTitle, setNewTodoTitle] = useState("Untitled"); //modifying todo title
   const [newNote, setNewNote] = useState(""); //adding note to todo
-  const [folderId, setFolderId] = useState(null); //get current folder id to know which folder is being changed
+  const [folderId, setFolderId] = useState(null); //track folder for new todo
   const [tempTitle, setTempTitle] = useState(""); //edited title when user changes folder title
   const [folders, setFolders] = useState([]);
+  const [editTitleId, setEditTitleId] = useState(null); //get current folder id to know which folder is being changed
 
   //load folders once after render
   useEffect(() => {
     loadFolders();
   }, []);
 
+  useEffect(() => {
+    console.log("folderId changed to", folderId);
+  }, [folderId]);
+
   const loadFolders = async () => {
     try {
       const response = await api.get("/folders");
+      console.log("API response:", response.data);
       setFolders(response.data);
     } catch (err) {
       console.log(err);
@@ -25,23 +31,20 @@ function TodoApp({ onLogout }) {
   };
 
   const saveEditedFolder = async (editedTitle) => {
-    if (!editedTitle.trim()) {
-      editedTitle = "Untitled";
-    } else {
-      editedTitle = editedTitle.trim();
-    }
+    const title = editedTitle.trim() ? editedTitle.trim() : "Untitled";
+
     try {
-      await api.put("/folders/${folderId}", { title: editedTitle });
+      await api.put(`/folders/${folderId}`, { title: title });
       setFolders((prev) =>
-        prev.map((f) => (f.id === folderId ? { ...f, title: editedTitle } : f))
+        prev.map((f) => (f.id === editTitleId ? { ...f, title: title } : f))
       );
     } catch (err) {
       console.log(err);
     }
-    setFolderId(null);
+    setEditTitleId(null);
   };
 
-  const addNewTodo = async (newTodoTitle, newNote) => {
+  const addNewTodo = async () => {
     const title = newTodoTitle.trim() ? newTodoTitle.trim() : "Untitled";
     const note = newNote ? newNote.trim() : "";
 
@@ -50,7 +53,7 @@ function TodoApp({ onLogout }) {
         title,
         note,
         completed: false,
-        folder: folderId,
+        folder: { id: folderId },
       };
       const response = await api.post("/todos", todoData);
       setFolders((prev) =>
@@ -63,7 +66,7 @@ function TodoApp({ onLogout }) {
     }
 
     setNewTodoTitle("Untitled");
-    setNote("");
+    setNewNote("");
     setFolderId(null);
     setShowModal(false);
   };
@@ -75,9 +78,7 @@ function TodoApp({ onLogout }) {
       };
       const response = await api.post("/folders", folderData);
       const newFolder = { ...response.data, todos: [] };
-      setFolders((prev) => {
-        [...prev, newFolder];
-      });
+      setFolders((prev) => [...prev, newFolder]);
     } catch (err) {
       console.log(err);
     }
@@ -98,10 +99,10 @@ function TodoApp({ onLogout }) {
           </button>
         </div>
 
-        {folders.map((folder) => (
+        {folders?.map((folder) => (
           <div key={folder.id} className="folder-block">
             <div className="folder-header">
-              {folderId === folder.id ? (
+              {editTitleId === folder.id ? (
                 <input
                   value={tempTitle}
                   onChange={(e) => {
@@ -115,7 +116,7 @@ function TodoApp({ onLogout }) {
                   <h3>{folder.title}</h3>
                   <button
                     onClick={() => {
-                      setFolderId(folder.id);
+                      setEditTitleId(folder.id);
                       setTempTitle(folder.title);
                     }}
                   >
@@ -126,7 +127,7 @@ function TodoApp({ onLogout }) {
             </div>
 
             <div className="todo-block">
-              {folders.todos.map((todo) => (
+              {folders.todos?.map((todo) => (
                 <div key={todo.id} className="todo-box">
                   <div className="todo-header">
                     <button>X</button>
@@ -171,7 +172,7 @@ function TodoApp({ onLogout }) {
               <div className="modal-actions">
                 <button
                   onClick={() => {
-                    addNewTodo(newTodoTitle, newNote);
+                    addNewTodo();
                   }}
                 >
                   Add
