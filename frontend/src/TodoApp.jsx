@@ -94,7 +94,7 @@ function TodoApp({ onLogout }) {
         </div>
 
         {folders?.map((folder) => (
-          <div key={folder.id} className="folder-block">
+          <div key={folder.id}>
             <div className="folder-header">
               {editTitleId === folder.id ? (
                 <input
@@ -122,18 +122,18 @@ function TodoApp({ onLogout }) {
 
             <div className="todo-block">
               {folder.todos?.map((todo) => (
-                <div key={todo.id} className="todo-box">
-                  <div className="todo-header">
-                    <button>X</button>
-                    <button>✅</button>
-                  </div>
+                <div key={todo.id}>
                   <div className="todo-main">
-                    <h4>{todo.title}</h4>
-                    <p>{todo.note}</p>
+                    <div className="todo-title-note">
+                      <h4>{todo.title}</h4>
+                      <p>{todo.note}</p>
+                    </div>
+                    <button> X </button>
                   </div>
+                  <hr></hr>
                 </div>
               ))}
-              <div className="new-todo">
+              <div>
                 <button
                   onClick={() => {
                     setShowModal(true);

@@ -3,8 +3,8 @@
   display: flex;
   justify-content: center; /* center horizontally */
   align-items: center;     /* center vertically */
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   padding: 2rem;
   background-color: #f2f2f2;
 }
