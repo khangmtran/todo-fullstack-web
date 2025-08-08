@@ -1,10 +1,10 @@
 /* Center the form on the page */
 .login-wrapper {
-  display: flex;
-  justify-content: center; /* center horizontally */
-  align-items: center;     /* center vertically */
-  height: 100%;
-  width: 100%;
+  /* display: flex;
+  justify-content: center; 
+  align-items: center;  */
+  height: 93%;
+  width: 96.5%;
   padding: 2rem;
   background-color: #f2f2f2;
 }
@@ -18,17 +18,17 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 300px;
   text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
 }
 
 .login-form h2,
 .login-form p,
-.login-form button{
-  margin: 0;                 /* remove default margins so gap rules everything */
+.login-form button {
+  margin: 0; /* remove default margins so gap rules everything */
 }
 
 /* Style for all input fields */
@@ -52,10 +52,10 @@
   font-weight: bold;
 }
 
-.btn-signup{
-    background: none;    
-  border: none;  
-  padding: 0;      
+.btn-signup {
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 .btn-login:hover {
