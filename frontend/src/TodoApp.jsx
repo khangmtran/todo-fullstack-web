@@ -112,7 +112,7 @@ function TodoApp({ onLogout, username }) {
 
   return (
     <div className="todo-container">
-      <div className="sidebar">
+      <div className="left-sidebar">
         <h2>Tasks</h2>
         <p>Current</p>
       </div>
@@ -120,9 +120,6 @@ function TodoApp({ onLogout, username }) {
       <div className="main-content">
         <div className="main-header">
           <h2 className="welcome-text">Welcome, {username}!</h2>
-          <button onClick={onLogout} className="btn-logout">
-            Log out
-          </button>
         </div>
 
         {folders?.map((folder) => (
@@ -161,6 +158,9 @@ function TodoApp({ onLogout, username }) {
                   </>
                 )}
               </div>
+              <div>Due Date</div>
+              <div>Priority</div>
+              <div>Completed</div>
               <div className="folder-deleter">
                 <button
                   onClick={() => {
@@ -168,24 +168,30 @@ function TodoApp({ onLogout, username }) {
                     setDeleteFolderId(folder.id);
                   }}
                 >
-                  X
+                  Remove Folder
                 </button>
               </div>
             </div>
 
             <div className="todo-block">
-              {folder.todos?.map((todo) => (
-                <div key={todo.id}>
-                  <div className="todo-main">
-                    <div className="todo-title-note">
-                      <h4>{todo.title}</h4>
-                      <p>{todo.note}</p>
+              {folder.todos?.map((todo, idx) => {
+                const num = idx + 1;
+                return (
+                  <div key={todo.id}>
+                    <div className="todo-main">
+                      <div className="todo-num">{num}</div>
+                      <div className="todo-title-note">
+                        <h4>{todo.title}</h4>
+                        <p>{todo.note}</p>
+                      </div>
+                      <div className="todo-main-button">
+                        <button> X </button>
+                      </div>
                     </div>
-                    <button> X </button>
+                    <hr />
                   </div>
-                  <hr></hr>
-                </div>
-              ))}
+                );
+              })}
               <div>
                 <button
                   onClick={() => {
@@ -278,6 +284,11 @@ function TodoApp({ onLogout, username }) {
             ➕ New Folder
           </button>
         </div>
+      </div>
+      <div className="right-sidebar">
+        <button onClick={onLogout} className="btn-logout">
+          Log out
+        </button>
       </div>
     </div>
   );
