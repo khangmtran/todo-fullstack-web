@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "bootstrap": "^5.3.7",
+    "modern-normalize": "^3.0.1",
+    "normalize.css": "^8.0.1",
     "react-router-dom": "^6.30.1"
   }
 }

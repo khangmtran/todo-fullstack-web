@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./css/TodoApp.css";
 import api from "./services/api";
 
-function TodoApp({ onLogout }) {
+function TodoApp({ onLogout, username }) {
   const [showModal, setShowModal] = useState(false); //edit todo modal
   const [newTodoTitle, setNewTodoTitle] = useState("Untitled"); //modifying todo title
   const [newNote, setNewNote] = useState(""); //adding note to todo
@@ -10,10 +10,24 @@ function TodoApp({ onLogout }) {
   const [tempTitle, setTempTitle] = useState(""); //edited title when user changes folder title
   const [folders, setFolders] = useState([]);
   const [editTitleId, setEditTitleId] = useState(null); //get current folder id to know which folder is being changed
+  const [deleteFolder, setDeleteFolder] = useState(false);
+  const [deleteFolderId, setDeleteFolderId] = useState(null);
 
   //load folders once after render
   useEffect(() => {
     loadFolders();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setDeleteFolder(false);
+        setDeleteFolderId(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const loadFolders = async () => {
@@ -73,10 +87,27 @@ function TodoApp({ onLogout }) {
         title: "Untitled",
       };
       const response = await api.post("/folders", folderData);
+
       setFolders((prev) => [...prev, response.data]);
+      setEditTitleId(response.data.id);
+      setTempTitle(response.data.title);
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const handleDeleteFolder = async (folderId) => {
+    try {
+      const folderData = {
+        id: folderId,
+      };
+      await api.delete(`/folders/${folderId}`, folderData);
+      setFolders((prev) => prev.filter((f) => f.id !== folderId));
+    } catch (err) {
+      console.log(err);
+    }
+    setDeleteFolder(false);
+    setDeleteFolderId(null);
   };
 
   return (
@@ -88,6 +119,7 @@ function TodoApp({ onLogout }) {
 
       <div className="main-content">
         <div className="main-header">
+          <h2 className="welcome-text">Welcome, {username}!</h2>
           <button onClick={onLogout} className="btn-logout">
             Log out
           </button>
@@ -96,28 +128,49 @@ function TodoApp({ onLogout }) {
         {folders?.map((folder) => (
           <div key={folder.id}>
             <div className="folder-header">
-              {editTitleId === folder.id ? (
-                <input
-                  value={tempTitle}
-                  onChange={(e) => {
-                    setTempTitle(e.target.value);
-                  }}
-                  onBlur={() => saveEditedFolder(tempTitle)}
-                  autoFocus
-                />
-              ) : (
-                <>
-                  <h3>{folder.title}</h3>
-                  <button
-                    onClick={() => {
-                      setEditTitleId(folder.id);
-                      setTempTitle(folder.title);
+              <div className="folder-title-edit">
+                {editTitleId === folder.id ? (
+                  <input
+                    value={tempTitle}
+                    onChange={(e) => {
+                      setTempTitle(e.target.value);
                     }}
-                  >
-                    ✏️
-                  </button>
-                </>
-              )}
+                    onBlur={() => saveEditedFolder(tempTitle)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        saveEditedFolder(tempTitle);
+                      } else if (e.key === "Escape") {
+                        setEditTitleId(null);
+                        setTempTitle(folder.title);
+                      }
+                    }}
+                    autoFocus
+                  />
+                ) : (
+                  <>
+                    <h3>{folder.title}</h3>
+                    <button
+                      onClick={() => {
+                        setEditTitleId(folder.id);
+                        setTempTitle(folder.title);
+                      }}
+                    >
+                      ✏️
+                    </button>
+                  </>
+                )}
+              </div>
+              <div className="folder-deleter">
+                <button
+                  onClick={() => {
+                    setDeleteFolder(true);
+                    setDeleteFolderId(folder.id);
+                  }}
+                >
+                  X
+                </button>
+              </div>
             </div>
 
             <div className="todo-block">
@@ -149,7 +202,20 @@ function TodoApp({ onLogout }) {
 
         {showModal ? (
           <div className="modal-overlay">
-            <div className="modal-content">
+            <div
+              className="modal-content"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addNewTodo();
+                } else if (e.key === "Escape") {
+                  setNewTodoTitle("Untitled");
+                  setNewNote("");
+                  setFolderId(null);
+                  setShowModal(false);
+                }
+              }}
+            >
               <h3>Add New Todo</h3>
               <input
                 type="text"
@@ -166,13 +232,6 @@ function TodoApp({ onLogout }) {
               <div className="modal-actions">
                 <button
                   onClick={() => {
-                    addNewTodo();
-                  }}
-                >
-                  Add
-                </button>
-                <button
-                  onClick={() => {
                     setNewTodoTitle("Untitled");
                     setNewNote("");
                     setFolderId(null);
@@ -181,10 +240,38 @@ function TodoApp({ onLogout }) {
                 >
                   Cancel
                 </button>
+                <button
+                  onClick={() => {
+                    addNewTodo();
+                  }}
+                >
+                  Add
+                </button>
               </div>
             </div>
           </div>
         ) : null}
+        {deleteFolder && (
+          <div className="modal-overlay">
+            <div className="modal-delete-folder">
+              <h4>Delete Folder</h4>
+              <p>Are you sure you want to delete this folder?</p>
+              <div className="modal-delete-folder-button">
+                <button
+                  onClick={() => {
+                    setDeleteFolder(false);
+                    setDeleteFolderId(null);
+                  }}
+                >
+                  No
+                </button>
+                <button onClick={() => handleDeleteFolder(deleteFolderId)}>
+                  Yes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div>
           <button onClick={addNewFolder} className="add-folder-btn">

@@ -21,16 +21,15 @@ function Login({ onLogin }) {
       });
       const token = response.data.token;
       localStorage.setItem("token", token);
-      onLogin(token);
+      onLogin(token, username);
       navigate("/todos");
     } catch (err) {
-      alert("Login failed: " + err.response.data);
+      alert("Login failed: " + (err.response?.data || err));
     }
   };
 
   return (
     <div className="login-wrapper">
-      {/* wrapper to center form */}
       <form onSubmit={handleSubmit} className="login-form">
         <h2>Login</h2>
 

@@ -1,22 +1,19 @@
 /* Center the form on the page */
 .login-wrapper {
-  /* display: flex;
-  justify-content: center; 
-  align-items: center;  */
-  height: 93%;
-  width: 96.5%;
-  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   background-color: #f2f2f2;
 }
 
 /* Style the login box */
 .login-form {
   background-color: white;
-  margin-bottom: 100px;
   padding: 40px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  width: 300px;
+  width: 400px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -31,13 +28,16 @@
   margin: 0; /* remove default margins so gap rules everything */
 }
 
+.signup-error {
+  color: rgb(245, 85, 85);
+}
+
 /* Style for all input fields */
 .form-input {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 1rem;
 }
 
 /* Button styling */
@@ -56,6 +56,9 @@
   background: none;
   border: none;
   padding: 0;
+  color: #646cff;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .btn-login:hover {

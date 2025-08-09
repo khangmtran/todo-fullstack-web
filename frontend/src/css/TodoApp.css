@@ -2,32 +2,25 @@
 
 .todo-container {
   display: flex;
-  height: 100%;
-  width: 100%;
-  background-color: #f2f2f2;
-  font-family: Arial, sans-serif;
 }
 
 /* Sidebar */
 .sidebar {
-  height: 100%;
+  min-height: 100vh;
   width: 200px;
   background-color: #ffffff;
   padding: 1rem;
+  padding-left: 2rem;
   border-right: 1px solid #ddd;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.sidebar h3 {
-  margin-bottom: 1rem;
-}
-
 /* Main content area */
 .main-content {
-  flex: 1;
-  padding: 2rem;
+  width: 100%;
+  padding: 3rem;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -36,14 +29,19 @@
 /* Header section */
 .main-header {
   display: flex;
-  justify-content: end;
-  margin-bottom: 1rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.welcome-text {
+  flex: 1;
+  text-align: center;
 }
 
 .btn-logout {
-  background-color: #e74c3c;
+  background-color: #fa5f4e;
   color: white;
-  padding: 1;
+  padding: 0.5rem;
   border-radius: 6px;
   cursor: pointer;
 }
@@ -65,11 +63,6 @@
 
 .folder-header {
   display: flex;
-  align-items: center;
-}
-
-.folder-header h3 {
-  margin: 0;
 }
 
 .folder-header button {
@@ -77,6 +70,16 @@
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
+}
+
+.folder-title-edit {
+  display: flex;
+}
+
+.folder-deleter {
+  display: flex;
+  flex: 1;
+  justify-content: end;
 }
 
 .todo-block {
@@ -87,15 +90,6 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.todo-box {
-  border: 1px solid black;
-  padding: 0.5rem;
-}
-
-.todo-header {
-  margin: -0.5rem;
 }
 
 .todo-main {
@@ -119,60 +113,6 @@
 
 hr {
   margin: 0;
-}
-
-.new-todo {
-  display: flex;
-}
-
-/* Input section */
-.todo-input {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.todo-input input {
-  flex: 1;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-}
-
-.todo-input button {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  background-color: #646cff;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-.todo-input button:hover {
-  background-color: #4b50d4;
-}
-
-/* Todo list styling */
-.todo-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.todo-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #eee;
-}
-
-.todo-item span {
-  cursor: pointer;
-}
-
-.todo-item span.done {
-  text-decoration: line-through;
-  color: #999;
 }
 
 .add-folder-btn {
@@ -205,7 +145,7 @@ hr {
   background: white;
   padding: 2rem;
   border-radius: 12px;
-  width: 300px;
+  width: 400px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
@@ -215,5 +155,24 @@ hr {
 .modal-actions {
   display: flex;
   justify-content: flex-end;
+  gap: 1rem;
+}
+
+.modal-delete-folder {
+  background: white;
+  width: 300px;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-delete-folder h4,
+p {
+  margin: 0.5rem;
+}
+
+.modal-delete-folder-button {
+  display: flex;
+  justify-content: end;
   gap: 1rem;
 }
