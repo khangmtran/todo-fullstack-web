@@ -17,10 +17,10 @@
   gap: 1rem;
 }
 
-.right-sidebar{
+.right-sidebar {
   min-height: 100vh;
   width: 200px;
-  display:flex;
+  display: flex;
   flex-direction: column;
   padding: 2rem;
 }
@@ -61,7 +61,6 @@
   margin-top: 1rem;
   align-items: center;
   justify-content: space-between;
-  padding-left: 1rem;
 }
 
 .folder-header button {
@@ -82,7 +81,7 @@
 .folder-deleter button {
   border: 1px solid;
   border-radius: 8px;
-  padding: 0.5rem;
+  padding: 0.7rem;
   font-size: 0.9rem;
   background-color: #fa5f4e;
   color: white;
@@ -94,6 +93,16 @@
   background-color: #c0392b;
 }
 
+.todo-headers{
+  display: grid;
+  grid-template-columns:3% 30% 15% 15% 15% 1fr;
+  text-align: center;
+  margin: 0.5rem;
+  gap: 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
 .todo-block {
   border: 1px solid #ddd;
   padding: 1rem;
@@ -101,12 +110,15 @@
   background-color: #fafafa;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-.todo-main {
-  display: flex;
+.todo-item {
+  display: grid;
+  grid-template-columns: 3% 30% 15% 15% 15% 1fr;
   align-items: center;
+  text-align: center;
+  gap: 2rem;
 }
 
 .todo-num {
@@ -121,38 +133,73 @@
   font-weight: bold;
   font-size: 1rem;
   margin-bottom: 0.5rem;
+  flex-shrink: 0;
 }
 
-.todo-title-note{
-  margin-left: 1rem;
-}
-.todo-main-button {
+.todo-tn-edit{
   display: flex;
-  flex: 1;
-  justify-content: end;
-  margin-bottom: 0.5rem;
+  justify-content:center;
+  align-items: center;
 }
 
-.todo-main-button button:hover {
+.todo-tn-edit button{
+  border: none;
+  background: none;
   cursor: pointer;
 }
 
-.todo-title-note h4 {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: normal;
-  color: #080000;
+.todo-title-note {
+  word-break: break-word;
+  padding: 0 0 0 2rem;
 }
 
-.todo-title-note p {
-  margin-top: 0;
-  margin-left: 0;
-  font-size: 0.9rem;
-  color: #494949;
+.todo-item-button{
+  display: flex;
+  justify-content: end;
+}
+
+.todo-item-button button:hover {
+  cursor: pointer;
+}
+
+.title{
+  font-size: 1.05rem;
+  color: black;
+  margin: 0;
+}
+
+.note {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  color: #6b6b6b;
+}
+
+.todo-item input[type="checkbox"] {
+  transform: scale(1.3);
+  cursor: pointer;
 }
 
 hr {
   margin: 0;
+}
+
+.new-todo{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.new-todo button{
+  background-color: #646cff;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.new-todo button:hover{
+  background-color: #4b50d4;
 }
 
 .add-folder-btn {
@@ -185,7 +232,8 @@ hr {
   background: white;
   padding: 2rem;
   border-radius: 12px;
-  width: 400px;
+  min-width: 320px;
+  width: 20%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
@@ -215,4 +263,16 @@ p {
   display: flex;
   justify-content: end;
   gap: 1rem;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.field-row.checkbox {
+  justify-content: flex-start;
+  gap: 0.5rem;
 }

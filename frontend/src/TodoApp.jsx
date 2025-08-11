@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./css/TodoApp.css";
 import api from "./services/api";
 
@@ -12,6 +12,18 @@ function TodoApp({ onLogout, username }) {
   const [editTitleId, setEditTitleId] = useState(null); //get current folder id to know which folder is being changed
   const [deleteFolder, setDeleteFolder] = useState(false);
   const [deleteFolderId, setDeleteFolderId] = useState(null);
+  const [toggleDeleteTodo, setToggleDeleteTodo] = useState(false);
+  const [deleteTodoId, setDeleteTodoId] = useState(null);
+  const [deleteTodoFolId, setDeleteTodoFolId] = useState(null);
+  const [newDueDate, setNewDueDate] = useState("");
+  const [newPriority, setNewPriority] = useState("normal");
+  const [showEditTodo, setShowEditTodo] = useState(false);
+  const [editTodoIds, setEditTodoIds] = useState({
+    folderId: null,
+    todoId: null,
+  });
+  const [editTitle, setEditTitle] = useState("");
+  const [editNote, setEditNote] = useState("");
 
   //load folders once after render
   useEffect(() => {
@@ -23,6 +35,9 @@ function TodoApp({ onLogout, username }) {
       if (e.key === "Escape") {
         setDeleteFolder(false);
         setDeleteFolderId(null);
+        setToggleDeleteTodo(false);
+        setDeleteTodoId(null);
+        setDeleteTodoFolId(null);
       }
     };
 
@@ -58,12 +73,18 @@ function TodoApp({ onLogout, username }) {
   const addNewTodo = async () => {
     const title = newTodoTitle.trim() ? newTodoTitle.trim() : "Untitled";
     const note = newNote ? newNote.trim() : "";
+    const dueDate = newDueDate || null;
+    const priority = newPriority;
+    const completed = false;
 
     try {
       const todoData = {
-        title: title,
-        note: note,
-        folderId: folderId,
+        title,
+        note,
+        folderId,
+        dueDate,
+        priority,
+        completed,
       };
       const response = await api.post("/todos", todoData);
       setFolders((prev) =>
@@ -77,6 +98,8 @@ function TodoApp({ onLogout, username }) {
 
     setNewTodoTitle("Untitled");
     setNewNote("");
+    setNewDueDate("");
+    setNewPriority("normal");
     setFolderId(null);
     setShowModal(false);
   };
@@ -110,6 +133,79 @@ function TodoApp({ onLogout, username }) {
     setDeleteFolderId(null);
   };
 
+  const deleteTodo = async (todoId, folderId) => {
+    try {
+      await api.delete(`/todos/${todoId}`);
+      setFolders((prev) =>
+        prev.map((f) =>
+          f.id === folderId
+            ? { ...f, todos: f.todos.filter((t) => t.id !== todoId) }
+            : f
+        )
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    setToggleDeleteTodo(false);
+    setDeleteTodoId(null);
+    setDeleteTodoFolId(null);
+  };
+
+  const changePriority = (folderId, todoId, newVal) => {
+    const updated = {
+      priority: newVal,
+    };
+    updateTodo(folderId, todoId, updated);
+  };
+
+  const updateTodo = async (folderId, todoId, updated) => {
+    try {
+      await api.put(`/todos/${todoId}`, updated);
+      setFolders((prev) =>
+        prev.map((f) =>
+          f.id === folderId
+            ? {
+                ...f,
+                todos: f.todos.map((t) =>
+                  t.id === todoId ? { ...t, ...updated } : t
+                ),
+              }
+            : f
+        )
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const toggleCompleted = (folderId, todo) => {
+    const updated = { completed: !todo.completed };
+    updateTodo(folderId, todo.id, updated);
+  };
+
+  const changeDueDate = (folderId, todoId, newDate) => {
+    const updated = { dueDate: newDate };
+    updateTodo(folderId, todoId, updated);
+  };
+
+  const openEditTodo = (folderId, todo) => {
+    setEditTodoIds({ folderId, todoId: todo.id });
+    setEditTitle(todo.title || "Untitled");
+    setEditNote(todo.note || "");
+    setShowEditTodo(true);
+  };
+
+  const saveEditTodo = async () => {
+    const title = editTitle.trim() || "Untitled";
+    const note = editNote.trim();
+
+    await updateTodo(editTodoIds.folderId, editTodoIds.todoId, { title, note });
+    setShowEditTodo(false);
+    setEditTodoIds({ folderId: null, todoId: null });
+    setEditTitle("");
+    setEditNote("");
+  };
+
   return (
     <div className="todo-container">
       <div className="left-sidebar">
@@ -128,6 +224,8 @@ function TodoApp({ onLogout, username }) {
               <div className="folder-title-edit">
                 {editTitleId === folder.id ? (
                   <input
+                    type="text"
+                    maxlength="50"
                     value={tempTitle}
                     onChange={(e) => {
                       setTempTitle(e.target.value);
@@ -158,9 +256,6 @@ function TodoApp({ onLogout, username }) {
                   </>
                 )}
               </div>
-              <div>Due Date</div>
-              <div>Priority</div>
-              <div>Completed</div>
               <div className="folder-deleter">
                 <button
                   onClick={() => {
@@ -173,26 +268,98 @@ function TodoApp({ onLogout, username }) {
               </div>
             </div>
 
+            <div className="todo-headers">
+              <div></div>
+              <div>Title and Note </div>
+              <div>Due Date</div>
+              <div>Priority</div>
+              <div>Completed</div>
+            </div>
+
             <div className="todo-block">
-              {folder.todos?.map((todo, idx) => {
-                const num = idx + 1;
-                return (
-                  <div key={todo.id}>
-                    <div className="todo-main">
-                      <div className="todo-num">{num}</div>
-                      <div className="todo-title-note">
-                        <h4>{todo.title}</h4>
-                        <p>{todo.note}</p>
+              {folder.todos
+                ?.slice() 
+                .sort((a, b) => {
+                  const priorityOrder = { high: 3, normal: 2, low: 1 };
+                  const pa = priorityOrder[a?.priority] ?? 2; 
+                  const pb = priorityOrder[b?.priority] ?? 2;
+                  return pb - pa; 
+                })
+                .map((todo, idx) => {
+                  const num = idx + 1;
+                  return (
+                    <div key={todo.id}>
+                      <div className="todo-item">
+                        <div className="todo-num">{num}</div>
+                        <div className="todo-tn-edit">
+                          <div className="todo-title-note">
+                            <p className="title">{todo.title}</p>
+                            <p className="note">{todo.note}</p>
+                          </div>
+                          <button
+                            type="button"
+                            className="icon-btn"
+                            onClick={() => openEditTodo(folder.id, todo)}
+                          >
+                            ✏️
+                          </button>
+                        </div>
+
+                        <input
+                          type="date"
+                          min="2000-01-01"
+                          value={todo.dueDate}
+                          onFocus={(e) => {
+                            if (!e.target.value) {
+                              const today = new Date()
+                                .toISOString()
+                                .split("T")[0];
+                              setNewDueDate(today);
+                            }
+                          }}
+                          onChange={(e) =>
+                            changeDueDate(folder.id, todo.id, e.target.value)
+                          }
+                        />
+
+                        <div>
+                          <select
+                            value={todo.priority || "normal"}
+                            onChange={(e) =>
+                              changePriority(folder.id, todo.id, e.target.value)
+                            }
+                          >
+                            <option value="low">Low</option>
+                            <option value="normal">Normal</option>
+                            <option value="high">High</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <input
+                            type="checkbox"
+                            checked={todo.completed}
+                            onChange={() => toggleCompleted(folder.id, todo)}
+                          />
+                        </div>
+
+                        <div className="todo-item-button">
+                          <button
+                            onClick={() => {
+                              setToggleDeleteTodo(true);
+                              setDeleteTodoFolId(folder.id);
+                              setDeleteTodoId(todo.id);
+                            }}
+                          >
+                            X
+                          </button>
+                        </div>
                       </div>
-                      <div className="todo-main-button">
-                        <button> X </button>
-                      </div>
+                      <hr />
                     </div>
-                    <hr />
-                  </div>
-                );
-              })}
-              <div>
+                  );
+                })}
+              <div className="new-todo">
                 <button
                   onClick={() => {
                     setShowModal(true);
@@ -225,6 +392,7 @@ function TodoApp({ onLogout, username }) {
               <h3>Add New Todo</h3>
               <input
                 type="text"
+                maxLength={50}
                 placeholder="Title"
                 value={newTodoTitle}
                 onChange={(e) => setNewTodoTitle(e.target.value)}
@@ -232,14 +400,46 @@ function TodoApp({ onLogout, username }) {
               />
               <textarea
                 placeholder="Note"
+                maxLength={100}
                 value={newNote}
                 onChange={(e) => setNewNote(e.target.value)}
               />
+
+              <label className="field-row">
+                <span>Due date</span>
+                <input
+                  type="date"
+                  min="2000-01-01"
+                  value={newDueDate}
+                  onFocus={(e) => {
+                    if (!e.target.value) {
+                      const today = new Date().toISOString().split("T")[0];
+                      setNewDueDate(today);
+                    }
+                  }}
+                  onChange={(e) => setNewDueDate(e.target.value)}
+                />
+              </label>
+
+              <label className="field-row">
+                <span>Priority</span>
+                <select
+                  value={newPriority}
+                  onChange={(e) => setNewPriority(e.target.value)}
+                >
+                  <option value="low">Low</option>
+                  <option value="normal">Normal</option>
+                  <option value="high">High</option>
+                </select>
+              </label>
+
               <div className="modal-actions">
                 <button
                   onClick={() => {
                     setNewTodoTitle("Untitled");
                     setNewNote("");
+                    setNewDueDate("");
+                    setNewPriority("normal");
                     setFolderId(null);
                     setShowModal(false);
                   }}
@@ -257,6 +457,7 @@ function TodoApp({ onLogout, username }) {
             </div>
           </div>
         ) : null}
+
         {deleteFolder && (
           <div className="modal-overlay">
             <div className="modal-delete-folder">
@@ -274,6 +475,79 @@ function TodoApp({ onLogout, username }) {
                 <button onClick={() => handleDeleteFolder(deleteFolderId)}>
                   Yes
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {toggleDeleteTodo && (
+          <div className="modal-overlay">
+            <div className="modal-delete-folder">
+              <h4>Delete Todo</h4>
+              <p>Are you sure you want to delete this todo?</p>
+              <div className="modal-delete-folder-button">
+                <button
+                  onClick={() => {
+                    setToggleDeleteTodo(false);
+                    setDeleteTodoId(null);
+                    setDeleteTodoFolId(null);
+                  }}
+                >
+                  No
+                </button>
+                <button
+                  onClick={() => deleteTodo(deleteTodoId, deleteTodoFolId)}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showEditTodo && (
+          <div className="modal-overlay">
+            <div
+              className="modal-content"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  saveEditTodo();
+                } else if (e.key === "Escape") {
+                  setShowEditTodo(false);
+                }
+              }}
+            >
+              <h3>Edit Todo</h3>
+
+              <input
+                type="text"
+                placeholder="Title"
+                value={editTitle}
+                maxLength={50}
+                onChange={(e) => setEditTitle(e.target.value)}
+                autoFocus
+              />
+
+              <textarea
+                placeholder="Note"
+                value={editNote}
+                maxLength={100}
+                onChange={(e) => setEditNote(e.target.value)}
+              />
+
+              <div className="modal-actions">
+                <button
+                  onClick={() => {
+                    setShowEditTodo(false);
+                    setEditTodoIds({ folderId: null, todoId: null });
+                    setEditTitle("");
+                    setEditNote("");
+                  }}
+                >
+                  Cancel
+                </button>
+                <button onClick={saveEditTodo}>Save</button>
               </div>
             </div>
           </div>

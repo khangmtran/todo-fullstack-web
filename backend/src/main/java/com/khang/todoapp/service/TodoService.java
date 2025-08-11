@@ -37,6 +37,9 @@ public class TodoService {
                 .title(todoDto.getTitle())
                 .note(todoDto.getNote())
                 .folder(folder)
+                .dueDate(todoDto.getDueDate())
+                .priority(todoDto.getPriority())
+                .completed(todoDto.getCompleted())
                 .build();
         Todo saved = todoRepository.save(todo);
 
@@ -53,9 +56,12 @@ public class TodoService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to update this todo");
         }
 
-        if(!todoDto.getTitle().isEmpty()) existing.setTitle(todoDto.getTitle());
-        if(!todoDto.getNote().isEmpty()) existing.setNote(todoDto.getNote());
-
+        if(todoDto.getTitle() != null) existing.setTitle(todoDto.getTitle());
+        if(todoDto.getNote() != null) existing.setNote(todoDto.getNote());
+        if(todoDto.getDueDate() != null) existing.setDueDate(todoDto.getDueDate());
+        if(todoDto.getPriority() != null) existing.setPriority(todoDto.getPriority());
+        if(todoDto.getCompleted() != null) existing.setCompleted(todoDto.getCompleted());
+        
         Todo updated = todoRepository.save(existing);
         return ResponseEntity.ok(DtoMapper.toTodoDto(updated));
     }

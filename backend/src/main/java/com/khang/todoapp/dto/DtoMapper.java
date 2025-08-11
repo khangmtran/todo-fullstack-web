@@ -13,6 +13,9 @@ public class DtoMapper {
                 .title(todo.getTitle())
                 .note(todo.getNote())
                 .folderId(todo.getFolder().getId())
+                .dueDate(todo.getDueDate())
+                .priority(todo.getPriority())
+                .completed(todo.getCompleted())
                 .build();
     }
 

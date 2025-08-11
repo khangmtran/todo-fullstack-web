@@ -1,5 +1,7 @@
 package com.khang.todoapp.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,6 +20,9 @@ public class Todo {
 
     private String title;
     private String note;
+    private LocalDate dueDate;
+    private String priority;
+    private Boolean completed;
 
     @ManyToOne
     @JoinColumn(name = "folder_id")
