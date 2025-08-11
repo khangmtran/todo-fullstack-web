@@ -11,6 +11,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
@@ -37,4 +40,25 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+    String raw = System.getenv().getOrDefault("CORS_ALLOWED_ORIGIN", "http://localhost:5173");
+    var origins = java.util.Arrays.stream(raw.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .toList();
+
+    CorsConfiguration c = new CorsConfiguration();
+    c.setAllowedOrigins(origins); // use setAllowedOriginPatterns(...) only if you need wildcards
+    c.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+    c.setAllowedHeaders(java.util.List.of("Authorization","Content-Type"));
+    c.setExposedHeaders(java.util.List.of("Authorization"));
+    c.setAllowCredentials(true); // ok even if you don't use cookies
+    c.setMaxAge(3600L);
+
+    UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
+    src.registerCorsConfiguration("/**", c);
+    return src;
+}
 }
