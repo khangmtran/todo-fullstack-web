@@ -13,7 +13,7 @@ function Login({ onLogin }) {
     navigate("/signup");
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     handleLogin();
   };
