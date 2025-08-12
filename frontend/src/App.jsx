@@ -29,7 +29,7 @@ function App() {
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
       <Route path="/signup" element={<Signup />} />
       {/* 2. Protected todos route */}
-      {/* <Route
+      <Route
         path="/todos"
         element={
           token ? (
@@ -38,7 +38,7 @@ function App() {
             <Navigate to="/login" replace />
           )
         }
-      /> */}
+      />
       {/* 3. Catch-all: send logged-in users to /todos, others to /login */}
       <Route
         path="*"
