@@ -23,9 +23,8 @@ function Login({ onLogin }) {
       // const token = response.data.token;
       // localStorage.setItem("token", token);
       // onLogin(token, username);
-      navigate("/todos");
+      // navigate("/todos");
     } catch (err) {
-      e.stopPropagation();
       if (err.response?.data) {
         setWrongInfo(true);
       } else {
