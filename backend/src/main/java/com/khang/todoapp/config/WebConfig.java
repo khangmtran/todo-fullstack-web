@@ -10,6 +10,8 @@ public void addCorsMappings(CorsRegistry registry) {
     String raw = System.getenv().getOrDefault("CORS_ALLOWED_ORIGIN", "http://localhost:5173");
     for (String origin : raw.split(",")) {
         registry.addMapping("/**")
+            .allowedOriginPatterns("http://localhost:5173",
+                           "http://192.168.*.*:5173")
             .allowedOrigins(origin.trim())
             .allowedMethods("GET","POST","PUT","PATCH","DELETE","OPTIONS")
             .allowedHeaders("*")

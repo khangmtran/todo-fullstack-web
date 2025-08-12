@@ -162,7 +162,6 @@
 }
 
 .todo-item input[type="date"] {
-  min-width: 90px;
 }
 
 .todo-item select {

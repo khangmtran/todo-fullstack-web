@@ -208,10 +208,10 @@ function TodoApp({ onLogout, username }) {
 
   return (
     <div className="todo-container">
-      <div className="left-sidebar">
+      {/* <div className="left-sidebar">
         <h2>Tasks</h2>
         <p>Current</p>
-      </div>
+      </div> */}
 
       <div className="main-content">
         <div className="main-header">
