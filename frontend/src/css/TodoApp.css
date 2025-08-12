@@ -162,11 +162,11 @@
 }
 
 .todo-item input[type="date"] {
-  min-width: 50%
+  min-width: 20%
 }
 
 .todo-item select {
-  min-width: 50%;
+  min-width: 20%;
 }
 
 .todo-item-button {
