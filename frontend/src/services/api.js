@@ -11,14 +11,20 @@ api.interceptors.request.use((retApi) => {
 });
 
 api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      console.log("reload");
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      const currentPath = window.location.pathname;
+
+      // Don't redirect if user already on auth pages
+      if (!currentPath.includes("/login") && !currentPath.includes("/signup")) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        window.location.href = "/login";
+      }
     }
-    return Promise.reject(err);
+
+    return Promise.reject(error);
   }
 );
 

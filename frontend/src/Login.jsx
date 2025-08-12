@@ -13,12 +13,8 @@ function Login({ onLogin }) {
     navigate("/signup");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    handleLogin();
-  };
-
-  const handleLogin = async () => {
     try {
       const response = await api.post("/auth/login", {
         username,
