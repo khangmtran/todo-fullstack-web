@@ -112,7 +112,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  min-width: 550px;
+  min-width: 400px;
 }
 
 .todo-item {
@@ -162,9 +162,11 @@
 }
 
 .todo-item input[type="date"] {
+  min-width: 50%
 }
 
 .todo-item select {
+  min-width: 50%;
 }
 
 .todo-item-button {
