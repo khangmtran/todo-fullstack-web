@@ -20,10 +20,10 @@ function Login({ onLogin }) {
         username,
         password,
       });
-      // const token = response.data.token;
-      // localStorage.setItem("token", token);
-      // onLogin(token, username);
-      // navigate("/todos");
+      const token = response.data.token;
+      localStorage.setItem("token", token);
+      onLogin(token, username);
+      navigate("/todos");
     } catch (err) {
       if (err.response?.data) {
         setWrongInfo(true);
@@ -35,7 +35,13 @@ function Login({ onLogin }) {
 
   return (
     <div className="login-wrapper">
-      <form onSubmit={handleSubmit} className="login-form">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit(e);
+        }}
+        className="login-form"
+      >
         <h2>Login</h2>
 
         {wrongInfo && (
