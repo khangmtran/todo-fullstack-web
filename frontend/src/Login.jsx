@@ -6,6 +6,7 @@ import api from "./services/api";
 function Login({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [wrongInfo, setWrongInfo] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = () => {
@@ -24,7 +25,11 @@ function Login({ onLogin }) {
       onLogin(token, username);
       navigate("/todos");
     } catch (err) {
-      alert("Login failed: " + (err.response?.data || err));
+      if (err.response?.data) {
+        setWrongInfo(true);
+      } else {
+        alert(err.message);
+      }
     }
   };
 
@@ -32,6 +37,10 @@ function Login({ onLogin }) {
     <div className="login-wrapper">
       <form onSubmit={handleSubmit} className="login-form">
         <h2>Login</h2>
+
+        {wrongInfo && (
+          <p className="signup-error">Incorrect Username or Password</p>
+        )}
 
         <input
           type="text"
