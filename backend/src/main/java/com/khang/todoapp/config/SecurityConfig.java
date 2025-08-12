@@ -50,11 +50,11 @@ public class SecurityConfig {
             .toList();
 
     CorsConfiguration c = new CorsConfiguration();
-    c.setAllowedOrigins(origins); // use setAllowedOriginPatterns(...) only if you need wildcards
+    c.setAllowedOrigins(origins); 
     c.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
     c.setAllowedHeaders(java.util.List.of("Authorization","Content-Type"));
     c.setExposedHeaders(java.util.List.of("Authorization"));
-    c.setAllowCredentials(true); // ok even if you don't use cookies
+    c.setAllowCredentials(true);
     c.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
