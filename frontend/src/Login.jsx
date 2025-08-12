@@ -25,6 +25,7 @@ function Login({ onLogin }) {
       onLogin(token, username);
       navigate("/todos");
     } catch (err) {
+      e.stopPropagation();
       if (err.response?.data) {
         setWrongInfo(true);
       } else {
