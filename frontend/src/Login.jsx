@@ -20,9 +20,9 @@ function Login({ onLogin }) {
         username,
         password,
       });
-      const token = response.data.token;
-      localStorage.setItem("token", token);
-      onLogin(token, username);
+      // const token = response.data.token;
+      // localStorage.setItem("token", token);
+      // onLogin(token, username);
       navigate("/todos");
     } catch (err) {
       e.stopPropagation();
