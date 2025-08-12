@@ -27,7 +27,7 @@
 
 /* Main content area */
 .main-content {
-  width: 100%;
+  flex: 1;
   padding: 3rem;
   background-color: #ffffff;
   display: flex;
@@ -52,6 +52,7 @@
   border-radius: 6px;
   cursor: pointer;
 }
+
 .btn-logout:hover {
   background-color: #c0392b;
 }
@@ -93,12 +94,12 @@
   background-color: #c0392b;
 }
 
-.todo-headers{
+.todo-headers {
   display: grid;
-  grid-template-columns:3% 30% 15% 15% 15% 1fr;
+  grid-template-columns: 3% 30% 15% 15% 15% 1fr;
   text-align: center;
   margin: 0.5rem;
-  gap: 2rem;
+  gap: 0.75rem;
   font-size: 1rem;
   font-weight: bold;
 }
@@ -111,6 +112,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-width: 550px;
 }
 
 .todo-item {
@@ -118,7 +120,7 @@
   grid-template-columns: 3% 30% 15% 15% 15% 1fr;
   align-items: center;
   text-align: center;
-  gap: 2rem;
+  gap: 0.75rem;
 }
 
 .todo-num {
@@ -136,24 +138,37 @@
   flex-shrink: 0;
 }
 
-.todo-tn-edit{
-  display: flex;
-  justify-content:center;
-  align-items: center;
-}
-
-.todo-tn-edit button{
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
 .todo-title-note {
   word-break: break-word;
-  padding: 0 0 0 2rem;
+  min-width: 50%;
 }
 
-.todo-item-button{
+.todo-title-edit {
+  display: flex;
+  justify-content: center;
+  align-item: center;
+}
+
+.todo-title-edit button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: -0.5rem;
+}
+
+.todo-title-edit button:hover {
+  background: none;
+  box-shadow: none;
+}
+
+.todo-item input[type="date"] {
+  min-width: 90px;
+}
+
+.todo-item select {
+}
+
+.todo-item-button {
   display: flex;
   justify-content: end;
 }
@@ -162,14 +177,14 @@
   cursor: pointer;
 }
 
-.title{
+.title {
   font-size: 1.05rem;
   color: black;
-  margin: 0;
+  margin-right: 0rem;
 }
 
 .note {
-  margin: 0 0 0.5rem 0;
+  margin: -0.5rem 0 0.5rem 0;
   font-size: 0.95rem;
   color: #6b6b6b;
 }
@@ -183,13 +198,13 @@ hr {
   margin: 0;
 }
 
-.new-todo{
+.new-todo {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.new-todo button{
+.new-todo button {
   background-color: #646cff;
   color: white;
   padding: 0.5rem 1rem;
@@ -198,7 +213,7 @@ hr {
   cursor: pointer;
 }
 
-.new-todo button:hover{
+.new-todo button:hover {
   background-color: #4b50d4;
 }
 

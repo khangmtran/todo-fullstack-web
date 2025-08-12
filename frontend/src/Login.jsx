@@ -47,7 +47,10 @@ function Login({ onLogin }) {
           type="text"
           placeholder="Username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => {
+            setWrongInfo(false);
+            setUsername(e.target.value);
+          }}
           className="form-input"
           autoFocus
         />
@@ -56,7 +59,10 @@ function Login({ onLogin }) {
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setWrongInfo(false);
+            setPassword(e.target.value);
+          }}
           className="form-input"
         />
 

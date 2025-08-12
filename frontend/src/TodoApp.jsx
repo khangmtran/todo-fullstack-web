@@ -278,12 +278,12 @@ function TodoApp({ onLogout, username }) {
 
             <div className="todo-block">
               {folder.todos
-                ?.slice() 
+                ?.slice()
                 .sort((a, b) => {
                   const priorityOrder = { high: 3, normal: 2, low: 1 };
-                  const pa = priorityOrder[a?.priority] ?? 2; 
+                  const pa = priorityOrder[a?.priority] ?? 2;
                   const pb = priorityOrder[b?.priority] ?? 2;
-                  return pb - pa; 
+                  return pb - pa;
                 })
                 .map((todo, idx) => {
                   const num = idx + 1;
@@ -291,18 +291,18 @@ function TodoApp({ onLogout, username }) {
                     <div key={todo.id}>
                       <div className="todo-item">
                         <div className="todo-num">{num}</div>
-                        <div className="todo-tn-edit">
-                          <div className="todo-title-note">
+
+                        <div className="todo-title-note">
+                          <div className="todo-title-edit">
                             <p className="title">{todo.title}</p>
-                            <p className="note">{todo.note}</p>
+                            <button
+                              type="button"
+                              onClick={() => openEditTodo(folder.id, todo)}
+                            >
+                              ✏️
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            className="icon-btn"
-                            onClick={() => openEditTodo(folder.id, todo)}
-                          >
-                            ✏️
-                          </button>
+                          <p className="note">{todo.note}</p>
                         </div>
 
                         <input

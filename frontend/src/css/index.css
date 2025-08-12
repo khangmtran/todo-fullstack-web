@@ -45,16 +45,17 @@ button {
 }
 
 button:hover {
-  background-color: #e9e9e9;    
-  border-color: #bbb;           
+  background-color: #e9e9e9;
+  border-color: #bbb;
 }
 
 button:focus {
-  outline: none;                 
-  border-color: #999;            
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);  
+  outline: none;
+  border-color: #999;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
 button:active {
-  background-color: #ddd;        /* Further darken on click */
+  background-color: #ddd;
+  /* Further darken on click */
 }
