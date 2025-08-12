@@ -25,6 +25,7 @@ function Login({ onLogin }) {
       onLogin(token, username);
       navigate("/todos");
     } catch (err) {
+      console.log(err);
       if (err.response?.data) {
         setWrongInfo(true);
       } else {
@@ -35,7 +36,7 @@ function Login({ onLogin }) {
 
   return (
     <div className="login-wrapper">
-      <div className="login-form">
+      <form onSubmit={handleSubmit} className="login-form">
         <h2>Login</h2>
 
         {wrongInfo && (
@@ -59,14 +60,14 @@ function Login({ onLogin }) {
           className="form-input"
         />
 
-        <button type="button" onClick={handleSubmit} className="btn-login">
+        <button type="submit" className="btn-login">
           Log In
         </button>
         <p>Or Sign Up Using</p>
         <button type="button" className="btn-signup" onClick={handleSignup}>
           Sign Up
         </button>
-      </div>
+      </form>
     </div>
   );
 }
