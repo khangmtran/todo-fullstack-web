@@ -46,13 +46,17 @@ function Signup() {
         )}
         {/* handle userExist */}
         {userExist && <p className="signup-error">Username already exists</p>}
-  
+
         <input
           type="text"
           placeholder="Username"
           className="form-input"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => {
+            setUsername(e.target.value);
+            setWrongPassword(false);
+            setUserExist(false);
+          }}
           minLength={6}
           maxLength={20}
           required
@@ -64,7 +68,11 @@ function Signup() {
           placeholder="Password"
           className="form-input"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setWrongPassword(false);
+            setUserExist(false);
+          }}
           minLength={8}
           maxLength={20}
           pattern="^(?=.*[A-Z])(?=.*\d).{10,20}$"
@@ -79,7 +87,11 @@ function Signup() {
           placeholder="Confirm Password"
           className="form-input"
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e) => {
+            setConfirmPassword(e.target.value);
+            setWrongPassword(false);
+            setUserExist(false);
+          }}
         />
         <button type="submit" className="btn-login">
           Sign Up
